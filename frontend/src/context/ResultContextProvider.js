@@ -1,4 +1,6 @@
+import axios from "axios";
 import { createContext, useContext, useState } from "react";
+import { AuthContext } from "./AuthContext";
 
 
 const ResultContext = createContext()
@@ -10,6 +12,7 @@ export function ResultContextProvider({ children }) {
     const [results, setResults] = useState([])
     const [isLoading, setisLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
+    const auth = localStorage.getItem("auth")
 
     // /search /images /videos
     const getResults = async (type) => {
@@ -20,7 +23,7 @@ export function ResultContextProvider({ children }) {
             const options = {
                 method: 'GET',
                 headers: {
-                    'X-RapidAPI-Key': '20afecf17cmshc445fe24cff4a85p1a32ccjsnf2dc86b552bf',
+                    'X-RapidAPI-Key': process.env.REACT_APP_API_KEY,
                     'X-RapidAPI-Host': 'bing-image-search1.p.rapidapi.com'
                 }
             };
@@ -39,7 +42,7 @@ export function ResultContextProvider({ children }) {
                 method: 'GET',
                 headers: {
                     'X-BingApis-SDK': 'true',
-                    'X-RapidAPI-Key': '20afecf17cmshc445fe24cff4a85p1a32ccjsnf2dc86b552bf',
+                    'X-RapidAPI-Key': process.env.REACT_APP_API_KEY,
                     'X-RapidAPI-Host': 'bing-news-search1.p.rapidapi.com'
                 }
             };
@@ -56,7 +59,7 @@ export function ResultContextProvider({ children }) {
             const options = {
                 method: 'GET',
                 headers: {
-                    'X-RapidAPI-Key': '20afecf17cmshc445fe24cff4a85p1a32ccjsnf2dc86b552bf',
+                    'X-RapidAPI-Key': process.env.REACT_APP_API_KEY,
                     'X-RapidAPI-Host': 'youtube-v2.p.rapidapi.com'
                 }
             };
@@ -71,12 +74,11 @@ export function ResultContextProvider({ children }) {
 
         }else{
 
-            console.log(process.env);
             const options = {
                 method: 'GET',
                 headers: {
                     'X-BingApis-SDK': 'true',
-                    'X-RapidAPI-Key': '20afecf17cmshc445fe24cff4a85p1a32ccjsnf2dc86b552bf',
+                    'X-RapidAPI-Key': process.env.REACT_APP_API_KEY,
                     'X-RapidAPI-Host': 'bing-web-search1.p.rapidapi.com'
                 }
             };
@@ -85,7 +87,19 @@ export function ResultContextProvider({ children }) {
                 .then(response => response.json())
                 .then((response) => {
                     setResults(response.webPages.value)
-                    console.log(response.webPages.value)
+                    if(auth)
+                    {
+                        const history = {
+                            userid : JSON.parse(localStorage.getItem("current-user")) ? JSON.parse(localStorage.getItem("current-user")) : JSON.parse(localStorage.getItem("google-current-user")),
+                            name : response.webPages.value[0].name,
+                            url: response.webPages.value[0].url
+                        } 
+                        if(history.userid)
+                        {
+                            axios.post("http://localhost:5000/history",history)
+                        }
+                    }
+                    console.log(response.webPages.value[0])
                     })
                 .catch(err => console.error(err));
         }
@@ -114,7 +128,7 @@ export function ResultContextProvider({ children }) {
 
 
     return (
-        <ResultContext.Provider value={{ getResults, results, searchTerm, setSearchTerm, isLoading }}>
+        <ResultContext.Provider value={{ getResults, results, searchTerm, setSearchTerm, isLoading, setisLoading }}>
             {children}
         </ResultContext.Provider>
     )

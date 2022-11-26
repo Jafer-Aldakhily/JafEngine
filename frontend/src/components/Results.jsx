@@ -22,11 +22,6 @@ export default function Results() {
     if(searchTerm)
     {
       getResults(`${location.pathname}?q=${searchTerm}&num=20`)
-      // if(location.pathname === '/videos')
-      // {
-      //     getResults(`/search?q=${searchTerm} videos`)
-      // }else{
-      // }
     }
   },[searchTerm,location.pathname])
 
@@ -38,7 +33,7 @@ export default function Results() {
       return (
         <div className="flex flex-wrap justify-between space-y-5 sm:px-56">
           {
-            results?.map(({name, url,displayUrl}, index) => (
+            results?.map(({name, url,displayUrl,snippet}, index) => (
               <div key={index} className='md:w-2/5 w-full'>
                 <a href={url} target="_blank">
                   <p className='text-sm'>
@@ -48,6 +43,10 @@ export default function Results() {
                   <p className='text-lg hover:underline dark:text-blue-300 text-blue-700'>
                     {name}
                   </p>
+                  <p className='text-base'>
+                    {snippet}
+                  </p>
+                  
                 </a>
               </div>
             ))

@@ -3,16 +3,46 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useContext } from 'react'
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { json, Link, useNavigate } from 'react-router-dom'
 import {AuthContext} from '../context/AuthContext'
+import {GoogleLogin}from 'react-google-login'
+import {gapi}from 'gapi-script'
 
 export default function Login() {
+
+
+ const {clientId} = useContext(AuthContext)
 
   const [users,setUsers] = useState([]) 
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
+  const {setProfile} = useContext(AuthContext)
   const navigate = useNavigate()
-  const {auth,setAuth} = useContext(AuthContext)
+  const {auth,setAuth,setUserId,username,setUserName} = useContext(AuthContext)
+
+    useEffect(() => {
+      const initClient = () => {
+            gapi.client.init({
+            clientId: clientId,
+            scope: ''
+          });
+       };
+       gapi.load('client:auth2', initClient);
+   });
+
+
+   const onSuccess = (res) => {
+    console.log('success:', res);
+    setProfile(res.profileObj)
+    setAuth(true)
+    localStorage.setItem("auth",JSON.stringify(true))
+    localStorage.setItem("google-user",JSON.stringify(res.profileObj))
+    localStorage.setItem("google-current-user",JSON.stringify(res.profileObj.googleId))
+    navigate('/')
+    };
+    const onFailure = (err) => {
+    console.log('failed:', err);
+    };
   
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -26,6 +56,11 @@ export default function Login() {
     if(user)
     {
         setAuth(true)
+        setUserId(user.id)
+        setUserName(user.username)
+        localStorage.setItem("auth",JSON.stringify(true))
+        localStorage.setItem("user",JSON.stringify(user))
+        localStorage.setItem("current-user",JSON.stringify(user.id))
         navigate('/')
     }else{
         alert("Error your credential is worng!")
@@ -129,6 +164,16 @@ export default function Login() {
         >
           Sign in
         </button>
+      </div>
+      <div className="flex items-center justify-between">
+      <GoogleLogin
+          clientId={clientId}
+          buttonText="Sign in with Google"
+          onSuccess={onSuccess}
+          onFailure={onFailure}
+          cookiePolicy={'single_host_origin'}
+          isSignedIn={true}
+      />
       </div>
     </form>
   </div>

@@ -1,25 +1,32 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState } from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import {AuthContext} from '../context/AuthContext'
+import uuid from 'react-uuid';
 
 export default function SignUp() {
 
   const [username,setUserName] = useState('')
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
+  const {setAuth} = useContext(AuthContext)
   const navigate = useNavigate()
 
 
   const handleSubmit = (e) => {
     e.preventDefault()
     const user = {
-      id : (Math.random().toFixed(2)),
+      id : uuid(),
       username: username,
       email: email,
       password:password
     }
     axios.post("http://localhost:5000/users",user)
+    setAuth(true)
+    localStorage.setItem("auth",JSON.stringify(true))
+    localStorage.setItem("user",JSON.stringify(user))
+    localStorage.setItem("current-user",JSON.stringify(user.id))
     navigate('/')
   }
 

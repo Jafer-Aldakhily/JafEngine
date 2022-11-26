@@ -5,7 +5,9 @@ export default function Logout() {
     const {setAuth} = useContext(AuthContext)
     const navigate = useNavigate()
     useEffect(() => {
-        setAuth(false)
+        localStorage.removeItem("auth")
+        localStorage.removeItem("user")
+        localStorage.removeItem("current-user")
         navigate('/login')
     },[])
   return (

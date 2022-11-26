@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "json-server --port 5000 --watch db.json"
+    "test": "json-server --port 5000 --watch server.json"
   },
   "author": "",
   "license": "ISC",

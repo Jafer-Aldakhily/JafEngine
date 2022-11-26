@@ -4,6 +4,7 @@ import AboutUs from './AboutUs'
 import ContactUs from './ContactUs'
 import Login from './Login'
 import Logout from './Logout'
+import Profile from './Profile'
 import Results from './Results'
 import SignUp from './SignUp'
 export default function RoutesList() {
@@ -20,6 +21,7 @@ export default function RoutesList() {
         <Route exact path='/logout' element={<Logout />} />
         <Route exact path='/about' element={<AboutUs />} />
         <Route exact path='/contact' element={<ContactUs />} />
+        <Route exact path='/profile' element={<Profile />} />
       </Routes>
     </div>
   )
